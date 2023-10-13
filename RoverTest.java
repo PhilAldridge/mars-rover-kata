@@ -8,15 +8,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class RoverTest {
-    int[] o1 = {5, 4};
-    int[] o2 = {8,8};
-    int[][] obstacles = {o1,o2};
+    int[][] obstacles = {{5, 4},{8,8}};
     ObstacleDetector detector = new MockDetector(obstacles);
 
     @Test
     public void acceptCommands() {
         Rover rover = new Rover(1, 1, "E", detector);
         rover.processCommands(new String[]{"L", "F"});
+    }
+
+    @Test
+    public void rejectInvalidCommands() {
+        Rover rover = new Rover(1, 1, "E", detector);
+        String actual = rover.processCommands(new String[]{"S", "F"});
+        assertThat(actual, containsString("Invalid"));
     }
 
     @Test

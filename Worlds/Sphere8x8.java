@@ -1,16 +1,10 @@
 package src.Worlds;
 
-import src.Worlds.World;
-
 public class Sphere8x8 implements World {
     public int[] implementWrapping(int newX, int newY, int newDirection){
         //EW wrapping
-        if(newX ==0){
-            newX = 8;
-        }
-        if(newX ==9){
-            newX = 1;
-        }
+        if(newX ==0){ newX = 8; }
+        if(newX ==9){ newX = 1; }
 
         //NS wrapping
         if(newY ==0){
@@ -32,7 +26,5 @@ public class Sphere8x8 implements World {
         return newX;
     }
 
-    private int oppositeDirection(int direction){
-        return (direction+2)%4;
-    }
+    public int oppositeDirection(int direction){ return (direction+2)%4; }
 }

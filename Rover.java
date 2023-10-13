@@ -14,19 +14,17 @@ public class Rover {
         this.direction = directionStringToInt(direction);
         this.detector = detector;
     }
-
     public String processCommands(String[] commands){
+        String obstacleString = "Obstacle detected. Rover stopped at %d,%d facing %s";
+        String invalidCommandString = "Invalid command given. Rover stopped at %d,%d facing %s";
+        String commandsSuccessful = "Commands completed successfully. Rover is now at %d,%d facing %s";
         for(String command:commands){
             switch(command){
                 case "F":
-                    if(!move(direction)){
-                        return "Obstacle detected. Rover stopped at "+x+","+y+" facing "+ directionIntToString(direction);
-                    }
+                    if(!move(direction)) return String.format(obstacleString,x,y,directionIntToString(direction));
                     break;
                 case "B":
-                    if(!move(oppositeDirection(direction))){
-                        return "Obstacle detected. Rover stopped at "+x+","+y+" facing "+ directionIntToString(direction);
-                    }
+                    if(!move(world.oppositeDirection(direction))) return String.format(obstacleString,x,y,directionIntToString(direction));
                     break;
                 case "L":
                     turnLeft();
@@ -35,10 +33,10 @@ public class Rover {
                     turnRight();
                     break;
                 default:
-                    break;
+                    return String.format(invalidCommandString,x,y,directionIntToString(direction));
             }
         }
-        return "Commands completed successfully. Rover is now at "+x+","+y+" facing "+ directionIntToString(direction);
+        return String.format(commandsSuccessful,x,y,directionIntToString(direction));
     }
 
     private boolean move(int direction){
@@ -51,21 +49,10 @@ public class Rover {
         };
     }
 
-    private boolean moveNorth() {
-        return checkNoObstacleAndMove(world.implementWrapping(x, y - 1, direction));
-    }
-
-    private boolean moveSouth() {
-        return checkNoObstacleAndMove(world.implementWrapping(x, y + 1, direction));
-    }
-
-    private boolean moveEast() {
-        return checkNoObstacleAndMove(world.implementWrapping(x+1, y, direction));
-    }
-
-    private boolean moveWest() {
-        return checkNoObstacleAndMove(world.implementWrapping(x-1, y, direction));
-    }
+    private boolean moveNorth(){ return checkNoObstacleAndMove(world.implementWrapping(x, y - 1, direction)); }
+    private boolean moveSouth() { return checkNoObstacleAndMove(world.implementWrapping(x, y + 1, direction)); }
+    private boolean moveEast() { return checkNoObstacleAndMove(world.implementWrapping(x+1, y, direction)); }
+    private boolean moveWest() { return checkNoObstacleAndMove(world.implementWrapping(x-1, y, direction)); }
 
     private boolean checkNoObstacleAndMove(int[] newXYDir) {
         if(detector.obstacleAtPosition(newXYDir[0], newXYDir[1])) return false;
@@ -79,17 +66,9 @@ public class Rover {
         this.direction = direction;
     }
 
-    private void turnLeft(){
-        direction = (direction+1)%4;
-    }
+    private void turnLeft(){ direction = (direction+1)%4;  }
+    private void turnRight(){ direction = (direction+3)%4; }
 
-    private void turnRight(){
-        direction = (direction+3)%4;
-    }
-
-    private int oppositeDirection(int direction){
-        return (direction+2)%4;
-    }
     private int directionStringToInt(String direction){
         return switch (direction){
             case "E" -> 0;
