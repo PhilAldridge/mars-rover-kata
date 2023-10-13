@@ -1,17 +1,15 @@
 package src.Obstacles;
 
-import src.PositionVector;
+public class MockDetector implements ObstacleDetector {
+    private final int[][] obstacleList;
 
-public class MockDetector implements ObstacleDetector{
-    private final PositionVector[] obstacleList;
-
-    public MockDetector(PositionVector[] obstacleList){
+    public MockDetector(int[][] obstacleList){
         this.obstacleList = obstacleList;
     }
     @Override
-    public Boolean obstacleAtPosition(PositionVector position) {
-        for(PositionVector obstacle: obstacleList){
-            if(obstacle.isEqualTo(position)) return true;
+    public Boolean obstacleAtPosition(int xPos, int yPos) {
+        for(int[] obstacle: obstacleList){
+            if(xPos == obstacle[0] && yPos ==obstacle[1]) return true;
         }
         return false;
     }

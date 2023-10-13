@@ -1,176 +1,174 @@
 package src;
 
 import org.junit.Test;
-import src.Obstacles.MockDetector;
-import src.Obstacles.ObstacleDetector;
+import src.Obstacles.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class RoverTest {
-    PositionVector[] obstacles = new PositionVector[] {new PositionVector(5,4)};
-    ObstacleDetector mockDetector = new MockDetector(obstacles);
+    int[] o1 = {5, 4};
+    int[] o2 = {8,8};
+    int[][] obstacles = {o1,o2};
+    ObstacleDetector detector = new MockDetector(obstacles);
 
     @Test
-    public void roverInitialiseConnection() {
-        Rover rover = new Rover(1,1,"E");
-    }
-@Test
-    public void acceptCommands(){
-        Rover rover = new Rover(1,1,"E");
-        rover.acceptCommands(new String[] {"L","F"});
-    }
-@Test
-    public void processForwardFacingEast(){
-        Rover rover = new Rover(1,1,"E");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,1 facing E");
+    public void acceptCommands() {
+        Rover rover = new Rover(1, 1, "E", detector);
+        rover.processCommands(new String[]{"L", "F"});
     }
 
     @Test
-    public void processForwardFacingNorth(){
-        Rover rover = new Rover(1,2,"N");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 1,1 facing N");
+    public void forwardFacingEast() {
+        Rover rover = new Rover(1, 1, "E", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 2,1 facing East", actual);
     }
 
     @Test
-    public void processForwardFacingSouth(){
-        Rover rover = new Rover(1,1,"S");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 1,2 facing S");
-
+    public void forwardFacingWest() {
+        Rover rover = new Rover(3, 1, "W", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 2,1 facing West", actual);
     }
 
     @Test
-    public void processForwardFacingWest(){
-        Rover rover = new Rover(1,1,"W");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 8,1 facing W");
+    public void forwardFacingNorth() {
+        Rover rover = new Rover(1, 3, "N", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 1,2 facing North", actual);
     }
 
     @Test
-    public void processBackwardFacingWest(){
-        Rover rover = new Rover(1,1,"W");
-        String actual = rover.acceptCommands(new String[] {"B"});
-        PositionVector expected = new PositionVector(2,1);
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,1 facing W");
+    public void forwardFacingSouth() {
+        Rover rover = new Rover(1, 1, "S", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 1,2 facing South", actual);
+    }
 
+
+    @Test
+    public void backFacingEast() {
+        Rover rover = new Rover(3, 1, "E", detector);
+        String actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 2,1 facing East", actual);
     }
 
     @Test
-    public void processMultipleForwardsBackwardsFacingWest(){
-        Rover rover = new Rover(1,1,"W");
-        String actual = rover.acceptCommands(new String[] {"B","F","F","F"});
-        PositionVector expected = new PositionVector(7,1);
-        assertEquals(actual, "Commands completed successfully. Rover is now at 7,1 facing W");
-
+    public void backFacingWest() {
+        Rover rover = new Rover(1, 1, "W", detector);
+        String actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 2,1 facing West", actual);
     }
 
     @Test
-    public void processLeftThenForwards(){
-        Rover rover = new Rover(1,1,"W");
-        String actual = rover.acceptCommands(new String[] {"L","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 1,2 facing S");
-
-        actual = rover.acceptCommands(new String[] {"L","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,2 facing E");
-
+    public void backFacingNorth() {
+        Rover rover = new Rover(1, 1, "N", detector);
+        String actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 1,2 facing North", actual);
     }
 
     @Test
-    public void processRightThenForwards(){
-        Rover rover = new Rover(1,3,"W");
-        String actual = rover.acceptCommands(new String[] {"R","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 1,2 facing N");
-
-        actual = rover.acceptCommands(new String[] {"R","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,2 facing E");
-
+    public void backFacingSouth() {
+        Rover rover = new Rover(1, 3, "S", detector);
+        String actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 1,2 facing South", actual);
     }
 
     @Test
-    public void processXNegativeWrapping(){
-        Rover rover = new Rover(1,1,"W");
-        String actual = rover.acceptCommands(new String[] {"F","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 7,1 facing W");
+    public void turnLeft() {
+        Rover rover = new Rover(1, 3, "S", detector);
+        String actual = rover.processCommands(new String[]{"L"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing East", actual);
 
+        actual = rover.processCommands(new String[]{"L"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing North", actual);
+
+        actual = rover.processCommands(new String[]{"L"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing West", actual);
+
+        actual = rover.processCommands(new String[]{"L"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing South", actual);
     }
 
     @Test
-    public void processXPositiveWrapping(){
-        Rover rover = new Rover(7,1,"E");
-        String actual = rover.acceptCommands(new String[] {"F","F","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,1 facing E");
+    public void turnRight() {
+        Rover rover = new Rover(1, 3, "S", detector);
+        String actual = rover.processCommands(new String[]{"R"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing West", actual);
 
+        actual = rover.processCommands(new String[]{"R"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing North", actual);
+
+        actual = rover.processCommands(new String[]{"R"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing East", actual);
+
+        actual = rover.processCommands(new String[]{"R"});
+        assertEquals("Commands completed successfully. Rover is now at 1,3 facing South", actual);
     }
 
     @Test
-    public void processCrossNorthPole(){
-        Rover rover = new Rover(1,1,"N");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 5,1 facing S");
-
+    public void multipleCommands() {
+        Rover rover = new Rover(1, 3, "S", detector);
+        String actual = rover.processCommands(new String[]{"B", "L", "F", "R", "F", "F"});
+        assertEquals("Commands completed successfully. Rover is now at 2,4 facing South", actual);
     }
 
     @Test
-    public void processCrossNorthPoleThenMove(){
-        Rover rover = new Rover(1,1,"N");
-        String actual = rover.acceptCommands(new String[] {"F","F","R","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 4,2 facing W");
-
+    public void northPoleForwardsandBackwards() {
+        Rover rover = new Rover(1, 1, "N", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 5,1 facing South", actual);
+        actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 1,1 facing North", actual);
     }
 
     @Test
-    public void processCrossNorthPoleFromOtherSide(){
-        Rover rover = new Rover(6,1,"N");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 2,1 facing S");
+    public void southPoleForwardsandBackwards() {
+        Rover rover = new Rover(1, 8, "S", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 5,8 facing North", actual);
+        actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 1,8 facing South", actual);
     }
 
     @Test
-    public void processCrossSouthPole(){
-        Rover rover = new Rover(1,8,"S");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 5,8 facing N");
+    public void eastWrappingForwardsandBackwards() {
+        Rover rover = new Rover(8, 1, "E", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 1,1 facing East", actual);
+        actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 8,1 facing East", actual);
     }
 
     @Test
-    public void processCrossSouthPoleOtherSide(){
-        Rover rover = new Rover(7,8,"S");
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 3,8 facing N");
+    public void westWrappingForwardsandBackwards() {
+        Rover rover = new Rover(8, 1, "W", detector);
+        String actual = rover.processCommands(new String[]{"B"});
+        assertEquals("Commands completed successfully. Rover is now at 1,1 facing West", actual);
+        actual = rover.processCommands(new String[]{"F"});
+        assertEquals("Commands completed successfully. Rover is now at 8,1 facing West", actual);
     }
 
     @Test
-    public void processCrossSouthPoleThenMove(){
-        Rover rover = new Rover(1,8,"S");
-        String actual = rover.acceptCommands(new String[] {"F","F","L","F"});
-        assertEquals(actual, "Commands completed successfully. Rover is now at 4,7 facing W");
+    public void detectsCollision() {
+        Rover rover = new Rover(4, 4, "E", detector);
+        String actual = rover.processCommands(new String[]{"F"});
+        assertThat(actual, containsString("Obstacle detected"));
     }
 
     @Test
-    public void positionEqualsFunction(){
-        assertTrue(new PositionVector(1,1).isEqualTo(new PositionVector(1,1)));
+    public void stopsAtCollision() {
+        Rover rover = new Rover(4, 4, "E", detector);
+        String actual = rover.processCommands(new String[]{"F", "L", "F"});
+        assertEquals("Obstacle detected. Rover stopped at 4,4 facing East", actual);
     }
 
     @Test
-    public void collisionDetection(){
-        assertTrue(mockDetector.obstacleAtPosition(new PositionVector(5,4)));
-    }
-
-    @Test
-    public void collisionDetectionFromRover(){
-        Rover rover = new Rover(4,4,"E", mockDetector);
-        String actual = rover.acceptCommands(new String[] {"F"});
-        assertThat(actual,containsString("Collision Detected"));
-    }
-
-    @Test
-    public void collisionDetectedStopsRover(){
-        Rover rover = new Rover(4,4,"E", mockDetector);
-        String actual = rover.acceptCommands(new String[] {"F","F"});
-        assertEquals(actual, "Collision Detected, further operations aborted. Rover is now at 4,4 facing E");
+    public void stopsAtCollisionOverPole() {
+        Rover rover = new Rover(4, 8, "S", detector);
+        String actual = rover.processCommands(new String[]{"F", "L", "F"});
+        assertEquals("Obstacle detected. Rover stopped at 4,8 facing South", actual);
     }
 }
-
